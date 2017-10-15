@@ -1,4 +1,4 @@
-package server;
+package controller;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 @SuppressWarnings("restriction")
@@ -29,11 +30,13 @@ public class MyServer {
 			httpServer = HttpServer.create(new InetSocketAddress(port), 0);
 			//Create a new context for the given context and handler
 			HttpContext httpContext = httpServer.createContext(context, handler);
-			BasicAuthenticator authenticator =new BasicAuthenticator("get") {
-		        @Override
-		        public boolean checkCredentials(String user, String pwd) {
-		            return user.equals("admin") && pwd.equals("password");
-		        }
+			BasicAuthenticator authenticator =new BasicAuthenticator("BASIC") {
+		        
+				@Override
+				public boolean checkCredentials(String arg0, String arg1) {
+					// TODO Auto-generated method stub
+					return true;
+				}
 		    };
 		    httpContext.setAuthenticator(authenticator);
 			 // Add HttpRequestFilter to the context
