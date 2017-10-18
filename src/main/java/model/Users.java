@@ -2,8 +2,9 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
-public class Users {
+public class Users implements UsersDao{
 
 	public Users(){
 		ArrayList<String> listRolesUno = new ArrayList<String>();
@@ -22,7 +23,7 @@ public class Users {
 	}
 	private List<User> users;
 
-	public List<User> getUsers() {
+	public List<User> getAllUsers() {
 		return users;
 	}
 
@@ -30,14 +31,69 @@ public class Users {
 		this.users = users;
 	}
 	
-	public boolean hasRights(String name, String password, String role){
+	public boolean hasRights(String name, String role){
 		boolean allowed = false;
-		for (User user : getUsers()) {
-			if (user.getPassword().equals(password) && user.getName().equals(name)){
-				allowed = user.getRoles().contains(role);
+		for (User user : getAllUsers()) {
+			if ( user.getName().equals(name)){
+				return user.getRoles().contains(role);
+			}
+		}
+		return false;
+	}
+
+	public boolean exists(String name){
+		return getUser(name)!=null;
+
+	}
+
+	public boolean exists(String name, String pwd) {
+		for (User user : getAllUsers()) {
+			if (user.getName().equals(name) ){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	public void addUser(User user) {
+		getAllUsers().add(user);
+
+	}
+
+	public User getUser(String name) {
+		for (User user : getAllUsers()) {
+			if (user.getName().equals(name)){
+				return user;
+			}
+		}
+		return null;
+
+	}
+
+	public void updateUser(User user) {
+
+		ListIterator<User> iterator = getAllUsers().listIterator();
+		while (iterator.hasNext()) {
+			User next = iterator.next();
+			if (next.equals(user)) {
+				//Replace element
+				iterator.set(user);
+			}
+		}
+
+	}
+
+	public void deleteUser(String name) {
+
+		ListIterator<User> iterator = getAllUsers().listIterator();
+		while (iterator.hasNext()) {
+			User next = iterator.next();
+			if (next.getName().equals(name)) {
+				iterator.remove();
 				break;
 			}
 		}
-		return allowed;
+
 	}
 }

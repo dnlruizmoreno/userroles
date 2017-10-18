@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class User {
+public class User implements Serializable {
 	
 	private List<String> roles;
 	private String name;
@@ -37,7 +38,19 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof User)) return false;
+
+		User user = (User) o;
+
+		return getName().equals(user.getName());
+	}
+
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
+	}
 }
