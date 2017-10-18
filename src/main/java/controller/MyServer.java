@@ -33,7 +33,7 @@ public class MyServer {
 			HttpContext httpContext2 = httpServer.createContext("/", new MyHandler());
 			//TODO review authenticator instead of Basic
 			//BasicAuthenticator authenticator =new MyAuthenticator("Realm");
-		    httpContext.setAuthenticator(new BasicAuthenticator("get") {
+		    httpContext.setAuthenticator(new BasicAuthenticator("ApiRealm") {
 				@Override
 				public boolean checkCredentials(String user, String pwd) {
 					UsersDao users = new Users();
