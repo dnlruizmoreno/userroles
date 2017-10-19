@@ -36,7 +36,7 @@ public class MyServer {
 		    httpContext.setAuthenticator(new BasicAuthenticator("ApiRealm") {
 				@Override
 				public boolean checkCredentials(String user, String pwd) {
-					UsersDao users = new Users();
+					UsersDao users = Users.getInstance();
 					return users.exists(user, pwd);
 				}
 			});

@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+
+//TODO Streams!!
 public class Users implements UsersDao{
 
-	public Users(){
+	private static Users instance;
+
+	private Users(){
 		ArrayList<String> listRolesUno = new ArrayList<String>();
 		listRolesUno.add("admin");
 		User uno = new User("admin","password",listRolesUno);
@@ -56,8 +60,13 @@ public class Users implements UsersDao{
 	}
 
 
-	public void addUser(User user) {
-		getAllUsers().add(user);
+	public boolean addUser(User user) {
+		if (getUser(user.getName())!= null){
+			getAllUsers().add(user);
+			return true;
+		}
+		return false;
+
 
 	}
 
@@ -71,29 +80,40 @@ public class Users implements UsersDao{
 
 	}
 
-	public void updateUser(User user) {
-
+	public boolean updateUser(User user) {
 		ListIterator<User> iterator = getAllUsers().listIterator();
 		while (iterator.hasNext()) {
 			User next = iterator.next();
 			if (next.equals(user)) {
 				//Replace element
 				iterator.set(user);
+				return true;
 			}
 		}
+		return false;
 
 	}
 
-	public void deleteUser(String name) {
+	public boolean deleteUser(String name) {
 
 		ListIterator<User> iterator = getAllUsers().listIterator();
 		while (iterator.hasNext()) {
 			User next = iterator.next();
 			if (next.getName().equals(name)) {
 				iterator.remove();
-				break;
+				return true;
 			}
 		}
+		return false;
+
+	}
+
+	public static Users getInstance(){
+		if(instance == null) {
+			instance = new Users();
+		}
+		return instance;
+
 
 	}
 }

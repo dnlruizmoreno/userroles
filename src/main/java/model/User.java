@@ -1,12 +1,17 @@
 package model;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class User implements Serializable {
-	
-	private List<String> roles;
+
+	@Expose
 	private String name;
+	@Expose
+	private List<String> roles;
+	@Expose(serialize = false)
 	private String password;
 	
 	

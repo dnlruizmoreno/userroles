@@ -9,13 +9,13 @@ public interface UsersDao {
     
    List<User> getAllUsers();
 
-   void addUser( User user );
+   boolean addUser( User user );
 
    User getUser( String name );
 
-   void updateUser( User user );
+   boolean updateUser( User user );
 
-   void deleteUser( String name );
+   boolean deleteUser( String name );
 
    boolean hasRights(String name, String role);
 

@@ -16,7 +16,7 @@ import java.util.Base64;
  */
 public class MyAuthenticator extends BasicAuthenticator{
 
-    private static Users users =  new Users();
+    private static Users users = Users.getInstance();
 
     public MyAuthenticator(String realm){
         super(realm);
@@ -48,8 +48,8 @@ public class MyAuthenticator extends BasicAuthenticator{
                 int colon = userpass.indexOf(58);
                 String uname = userpass.substring(0, colon);
                 String pass = userpass.substring(colon + 1);
-                String role="";
-                if(this.checkCredentials(uname, pass) && this.hasRights(uname,pass, role)) {
+
+                if(this.checkCredentials(uname, pass)) {
                    return new Success(new HttpPrincipal(uname, this.realm));
                 } else {
                     System.err.println("It was a problem in credentials and rights so error 401");
