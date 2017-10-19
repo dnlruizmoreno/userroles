@@ -4,7 +4,7 @@ import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpPrincipal;
-import model.Users;
+import model.UsersMemoryImpl;
 
 
 import java.net.URI;
@@ -16,7 +16,7 @@ import java.util.Base64;
  */
 public class MyAuthenticator extends BasicAuthenticator{
 
-    private static Users users = Users.getInstance();
+    private static UsersMemoryImpl users = UsersMemoryImpl.getInstance();
 
     public MyAuthenticator(String realm){
         super(realm);

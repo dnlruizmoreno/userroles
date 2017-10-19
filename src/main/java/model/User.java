@@ -7,14 +7,15 @@ import java.util.List;
 
 public class User implements Serializable {
 
+	
+	private static final long serialVersionUID = 3420841590764106644L;
+	
 	@Expose
 	private String name;
 	@Expose
 	private List<String> roles;
 	@Expose(serialize = false)
 	private String password;
-	
-	
 	
 	public User(){
 		super();

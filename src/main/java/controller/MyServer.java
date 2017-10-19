@@ -10,7 +10,7 @@ import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import model.Users;
+import model.UsersMemoryImpl;
 import model.UsersDao;
 
 @SuppressWarnings("restriction")
@@ -36,7 +36,7 @@ public class MyServer {
 		    httpContext.setAuthenticator(new BasicAuthenticator("ApiRealm") {
 				@Override
 				public boolean checkCredentials(String user, String pwd) {
-					UsersDao users = Users.getInstance();
+					UsersDao users = UsersMemoryImpl.getInstance();
 					return users.exists(user, pwd);
 				}
 			});

@@ -6,11 +6,11 @@ import java.util.ListIterator;
 
 
 //TODO Streams!!
-public class Users implements UsersDao{
+public class UsersMemoryImpl implements UsersDao{
 
-	private static Users instance;
+	private static UsersMemoryImpl instance;
 
-	private Users(){
+	private UsersMemoryImpl(){
 		ArrayList<String> listRolesUno = new ArrayList<String>();
 		listRolesUno.add("admin");
 		User uno = new User("admin","password",listRolesUno);
@@ -107,10 +107,9 @@ public class Users implements UsersDao{
 		return false;
 
 	}
-
-	public static Users getInstance(){
+	public static UsersMemoryImpl getInstance(){
 		if(instance == null) {
-			instance = new Users();
+			instance = new UsersMemoryImpl();
 		}
 		return instance;
 
