@@ -7,7 +7,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import model.User;
 import model.UsersMemoryImpl;
-
 import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
@@ -34,9 +33,8 @@ public class ApiHandler implements HttpHandler {
         URI uri = httpExchange.getRequestURI();
         OutputStream os = httpExchange.getResponseBody();
         UsersMemoryImpl users= UsersMemoryImpl.getInstance();
+        //TODO Refactor isAdmin and switch method
         boolean isAdmin= users.hasRights(httpExchange.getPrincipal().getUsername(), "admin");
-
-        System.err.println(httpExchange.getPrincipal());
         if (httpExchange.getRequestMethod().equals("GET")){
             doGet(httpExchange, uri, os, users);
         } else if (httpExchange.getRequestMethod().equals("POST") && isAdmin){
@@ -53,7 +51,6 @@ public class ApiHandler implements HttpHandler {
 
         os.close();
     }
-    
     /**
 	 * @param httpExchange
 	 * @param uri
@@ -71,7 +68,6 @@ public class ApiHandler implements HttpHandler {
 		        bytes= gson.toJson(usersList).getBytes();
 		    }{
 		        bytes= "{}".getBytes();
-
 		    }
 		    httpExchange.getResponseHeaders().add("Content-Type", "application/json");
 		    httpExchange.sendResponseHeaders(200, bytes.length);
@@ -96,9 +92,6 @@ public class ApiHandler implements HttpHandler {
 		    httpExchange.sendResponseHeaders(404, 0);
 		}
 	}
-	
-	
-	
 	/**
 	 * @param httpExchange
 	 * @param uri
@@ -111,15 +104,8 @@ public class ApiHandler implements HttpHandler {
 		if(depth.length == 2 && depth[0].equals("users")) {
 
 		    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-		    BufferedReader bufferedReader = null;
-		    StringBuilder stringBuilder = new StringBuilder();
-		    String line;
-		    bufferedReader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
-		    while ((line = bufferedReader.readLine()) != null) {
-		        stringBuilder.append(line);
-		    }
-		    stringBuilder.toString();
-		    User user = gson.fromJson(stringBuilder.toString(), User.class);
+		    String body = extractRequestBody(httpExchange.getRequestBody());
+		    User user = gson.fromJson(body, User.class);
 		    byte[] bytes = gson.toJson(user).getBytes();
 		    httpExchange.getResponseHeaders().add("Content-Type","application/json");
 		    httpExchange.sendResponseHeaders(200, bytes.length);

@@ -8,7 +8,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 @SuppressWarnings("restriction")
-public class MyHandler implements HttpHandler {
+public class WebHandler implements HttpHandler {
 
 
 	private static final int HTTP_OK_STATUS = 200;

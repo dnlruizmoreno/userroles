@@ -11,11 +11,11 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import model.Session;
 
-
+//TODO borramos?
 @SuppressWarnings("restriction")
 public class MyFilter extends Filter{
 
-    private static HashMap<String, Session> sessionHashMap = new HashMap<String, Session>();;
+    
 
     @Override
 	public String description() {
