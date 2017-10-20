@@ -21,6 +21,8 @@ public class UserRolesServer {
 	public static final String CONTEXT_API = "/api";
 	public static final String CONTEXT_API_SLASH = CONTEXT_API+"/";
 	private HttpServer httpServer;
+
+
 	//TODO Singleton pattern
 	private static HashMap<String, Session> sessionHashMap = new HashMap<String, Session>();
 	/**

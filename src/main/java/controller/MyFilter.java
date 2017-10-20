@@ -40,7 +40,7 @@ public class MyFilter extends Filter{
 			}
 			Headers responseHeaders = exchange.getResponseHeaders();
 			System.err.println("no session, so we take out to login in order we can log it");
-			responseHeaders.set("Location", "login.jsp");
+			responseHeaders.set("Location", "login.html");
 			exchange.sendResponseHeaders(302, 0);
 
 		}
@@ -55,7 +55,7 @@ public class MyFilter extends Filter{
 			System.err.println("session expired, so we take out to login in order we can log it");
 			sessionHashMap.remove(user);
             Headers responseHeaders = exchange.getResponseHeaders();
-            responseHeaders.set("Location", "login.jsp");
+            responseHeaders.set("Location", "login.html");
             exchange.sendResponseHeaders(302, 0);
         }
 */

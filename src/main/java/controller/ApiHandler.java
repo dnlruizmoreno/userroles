@@ -22,6 +22,7 @@ public class ApiHandler implements HttpHandler {
 	public static final String CONTENT_TYPE = "Content-Type";
 	public static final String APPLICATION_JSON = "application/json";
 	public static final String APPLICATION_XML = "application/xml";
+	public static final String APPLICATION_HTML = "text/html";
 	public static final String RESOURCES_ROOT = "users";
 	public static final String API_CONTEXT = "/api/";
 	public static final String LOCATION = "Location";
