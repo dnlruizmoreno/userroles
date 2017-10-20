@@ -1,5 +1,8 @@
 package model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -25,6 +28,8 @@ public class UsersMemoryImpl implements UsersDao{
 		setUsers(users);
 		
 	}
+
+
 	private List<User> users;
 
 	public List<User> getAllUsers() {

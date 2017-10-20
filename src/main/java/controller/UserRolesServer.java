@@ -18,6 +18,8 @@ import model.UsersDao;
 @SuppressWarnings("restriction")
 public class UserRolesServer {
 
+	public static final String CONTEXT_API = "/api";
+	public static final String CONTEXT_API_SLASH = CONTEXT_API+"/";
 	private HttpServer httpServer;
 	//TODO Singleton pattern
 	private static HashMap<String, Session> sessionHashMap = new HashMap<String, Session>();
@@ -31,7 +33,7 @@ public class UserRolesServer {
 			//Create HttpServer which is listening on the given port 
 			httpServer = HttpServer.create(new InetSocketAddress(port), 0);
 			//Create a new context for the given context and handler
-			HttpContext httpContext = httpServer.createContext("/api", new ApiHandler());
+			HttpContext httpContext = httpServer.createContext(CONTEXT_API, new ApiHandler());
 			//Create authenticator associated to api
 			httpContext.setAuthenticator(new BasicAuthenticator("ApiRealm") {
 				@Override

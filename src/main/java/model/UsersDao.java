@@ -1,12 +1,13 @@
 package model;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
  * Created by danielruizm on 10/18/17.
  */
 public interface UsersDao {
-    
+
    List<User> getAllUsers();
 
    boolean addUser( User user );

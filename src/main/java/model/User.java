@@ -1,20 +1,32 @@
 package model;
 
-import com.google.gson.annotations.Expose;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class User implements Serializable {
 
 	
 	private static final long serialVersionUID = 3420841590764106644L;
-	
-	@Expose
+
+
 	private String name;
-	@Expose
+
+	@JacksonXmlElementWrapper(useWrapping = false)
 	private List<String> roles;
-	@Expose(serialize = false)
+
+	@JsonIgnore
 	private String password;
 	
 	public User(){
