@@ -1,0 +1,144 @@
+{
+	"variables": [],
+	"info": {
+		"name": "APiUserRoles",
+		"_postman_id": "36719c62-b815-c2ed-a30b-746183d7b299",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "post a user",
+			"request": {
+				"url": "http://10.0.130.25:8030/api/users/admin",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46YWRtaW4=",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\t{\n\t    \"name\": \"name\",\n\t    \"roles\": [\n\t        \"page1\",\n\t        \"page2\"\n\t    ],\n\t    \"password\":\"newpwd\"\n\t}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "post a user XML",
+			"request": {
+				"url": "http://10.0.130.25:8030/api/users/admin",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46YWRtaW4=",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\t{\n\t    \"name\": \"name\",\n\t    \"roles\": [\n\t        \"page1\",\n\t        \"page2\"\n\t    ],\n\t    \"password\":\"newpwd\"\n\t}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllJson",
+			"request": {
+				"url": "http://10.0.130.25:8030/api/users",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllXml",
+			"request": {
+				"url": "http://10.0.130.25:8030/api/users/",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					},
+					{
+						"key": "Content-type",
+						"value": "application/xml",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GetByUserJSon",
+			"request": {
+				"url": "http://10.0.130.25:8030/api/users",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GetByUserXml",
+			"request": {
+				"url": "http://10.0.130.25:8030/api/users/name",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46cGFzc3dvcmQ=",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
