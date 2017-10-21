@@ -28,13 +28,13 @@ public class ApiHandler implements HttpHandler {
     private static List<String> methodAcceptedUser;
 
 	static {
-        methodAcceptedAdmin = new ArrayList<String>();
+        methodAcceptedAdmin = new ArrayList<>();
         methodAcceptedAdmin.add(ConstantsCommon.GET);
         methodAcceptedAdmin.add(ConstantsCommon.POST);
         methodAcceptedAdmin.add(ConstantsCommon.PUT);
         methodAcceptedAdmin.add(ConstantsCommon.OPTIONS);
         methodAcceptedAdmin.add(ConstantsCommon.DELETE);
-        methodAcceptedUser = new ArrayList<String>();
+        methodAcceptedUser = new ArrayList<>();
         methodAcceptedUser.add(ConstantsCommon.GET);
     }
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -44,7 +44,6 @@ public class ApiHandler implements HttpHandler {
 		LOGGER.info("Uri request {}, Method {}, User {} ", uri.toString(),httpExchange.getRequestMethod() , httpExchange.getPrincipal());
  	    OutputStream os = httpExchange.getResponseBody();
         UsersDao users= UsersMemoryImpl.getInstance();
-        //TODO Refactor isAdmin should return from Model?? and switch method
         boolean isAdmin= users.hasRights(httpExchange.getPrincipal().getUsername(), ConstantsCommon.ROLE_ADMIN);
         if (httpExchange.getRequestMethod().equals(ConstantsCommon.GET)){
             doGet(httpExchange, uri, os, users);

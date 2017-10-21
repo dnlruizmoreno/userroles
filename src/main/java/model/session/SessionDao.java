@@ -1,12 +1,11 @@
 package model.session;
 
-import model.user.User;
-
 import java.util.HashMap;
+import java.util.Map;
 
 public interface SessionDao {
 
-    HashMap<String, Session> getSessions();
+    Map<String, Session> getSessions();
 
     void createSession(String key);
 

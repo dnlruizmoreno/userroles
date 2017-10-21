@@ -14,6 +14,10 @@ import java.io.InputStreamReader;
  */
 public class ConversionUtils {
 
+    private ConversionUtils(){
+        throw new IllegalStateException("Utility class");
+    }
+
     static String inputStreamToString(InputStream inputStream) throws IOException {
         // TODO Auto-generated method stub
 

@@ -7,7 +7,7 @@ import java.util.Calendar;
  */
 public class Session {
 
-    private static long SESSION_EXPIRATION = 5*60*1000; //5 mins in millisecs
+    private static long SESSION_EXPIRATION = 5L*60*1000; //5 mins in millisecs
 
     long lastAction; // The time this session has been created
 

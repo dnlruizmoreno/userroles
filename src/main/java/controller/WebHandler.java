@@ -115,7 +115,6 @@ public class WebHandler implements HttpHandler {
 
 	private void doPageLogin(HttpExchange httpExchange, OutputStream os, URI uri) throws IOException {
 		File file = new File(FILEPATH_PAGE_LOGIN);
-		byte[] bytearray = new byte[(int) file.length()];
 		FileInputStream fis = new FileInputStream(file);
 		String html = ConversionUtils.inputStreamToString(fis);
 		String urirawquery=uri.getRawQuery();
@@ -168,7 +167,8 @@ public class WebHandler implements HttpHandler {
 	}
 
 	private OutputStream getOutputStreamPageLogged(HttpExchange httpExchange, String username, String page, String url) throws IOException {
-		OutputStream os;File file = new File(PATHNAME_TEMPLATE);
+		OutputStream os;
+		File file = new File(PATHNAME_TEMPLATE);
 		os = httpExchange.getResponseBody();
 		FileInputStream fis = new FileInputStream(file);
 		String html = ConversionUtils.inputStreamToString(fis);

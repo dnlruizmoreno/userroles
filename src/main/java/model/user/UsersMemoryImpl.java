@@ -56,7 +56,6 @@ public class UsersMemoryImpl implements UsersDao{
 		this.users = users;
 	}
 	public boolean hasRights(String name, String role){
-		boolean allowed = false;
 		for (User user : getAllUsers()) {
 			if ( user.getName().equals(name)){
 				return user.getRoles().contains(role);

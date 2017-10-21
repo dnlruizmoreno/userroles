@@ -1,6 +1,9 @@
 package controller;
 
 public class ConstantsCommon {
+    private ConstantsCommon() {
+        throw new IllegalStateException("Constant class");
+    }
 
     //Realted to project
     public static final String RESOURCES_ROOT = "users";
