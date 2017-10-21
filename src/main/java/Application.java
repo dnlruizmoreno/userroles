@@ -10,7 +10,7 @@ public class Application {
 
         // Create a new SimpleHttpServer
         UserRolesServer simpleHttpServer;
-        if (args[0] != null && NumberUtils.isDigits(args[0])){
+        if (args.length == 1 && NumberUtils.isDigits(args[0])){
             simpleHttpServer = new UserRolesServer(Integer.parseInt(args[0]));
         }
         else{
