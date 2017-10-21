@@ -4,16 +4,11 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 
 import com.sun.net.httpserver.BasicAuthenticator;
-import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import model.UsersMemoryImpl;
-import model.Session;
-import model.UsersDao;
+import model.user.UsersMemoryImpl;
+import model.user.UsersDao;
 
 @SuppressWarnings("restriction")
 public class UserRolesServer {
@@ -22,9 +17,6 @@ public class UserRolesServer {
 	public static final String CONTEXT_API_SLASH = CONTEXT_API+"/";
 	private HttpServer httpServer;
 
-
-	//TODO Singleton pattern
-	private static HashMap<String, Session> sessionHashMap = new HashMap<String, Session>();
 	/**
 	 * Instantiates a new simple http server.
 	 *
@@ -60,14 +52,6 @@ public class UserRolesServer {
 	public void start() {
 		this.httpServer.start();
 	}
-	//TODO refactor main to another class?
-	public static void main(String[] args) throws Exception {
-		
-		// Create a new SimpleHttpServer
-		UserRolesServer simpleHttpServer = new UserRolesServer(8030);
-		
-		// Start the server
-		simpleHttpServer.start();
-		System.out.println("Server is started and listening on port "+ 8030);
-	}
+
+
 }

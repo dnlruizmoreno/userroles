@@ -1,6 +1,5 @@
-package model;
+package model.user;
 
-import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
