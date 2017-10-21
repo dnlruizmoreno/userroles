@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 
-//TODO Streams!!
+
 public class UsersMemoryImpl implements UsersDao{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
