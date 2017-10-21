@@ -21,11 +21,14 @@ public class UsersMemoryImpl implements UsersDao{
 		listRolesDos.add("PAGE_1");
 		listRolesDos.add("PAGE_2");
 		listRolesDos.add("PAGE_3");
-		User dos = new User("name","password",listRolesDos);
-		ArrayList<User> users = new ArrayList();
+		User dos = new User("dos","password",listRolesDos);
+		ArrayList<String> listRolesTres = new ArrayList<String>();
+		listRolesTres.add("PAGE_2");
+		User tres = new User("tres","password",listRolesTres);
+		users = new ArrayList();
 		users.add(uno);
 		users.add(dos);
-		setUsers(users);
+		users.add(tres);
 	}
 
 	public List<User> getAllUsers() {

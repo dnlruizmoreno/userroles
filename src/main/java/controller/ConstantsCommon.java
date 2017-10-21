@@ -39,4 +39,5 @@ public class ConstantsCommon {
     public static final int HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE = 415;
     public static final int HTTP_STATUS_CREATED = 201;
     public static final String COOKIE = "Cookie";
+    public static final String SET_COOKIE = "Set-Cookie";
 }
