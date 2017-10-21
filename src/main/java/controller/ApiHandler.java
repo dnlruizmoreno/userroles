@@ -8,7 +8,11 @@ import com.sun.net.httpserver.HttpHandler;
 import model.user.User;
 import model.user.UsersDao;
 import model.user.UsersMemoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +21,8 @@ import java.util.List;
  * Created by danielruizm on 10/17/17.
  */
 public class ApiHandler implements HttpHandler {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static List<String> methodAcceptedAdmin;
     private static List<String> methodAcceptedUser;
@@ -32,11 +38,14 @@ public class ApiHandler implements HttpHandler {
         methodAcceptedUser.add(ConstantsCommon.GET);
     }
     public void handle(HttpExchange httpExchange) throws IOException {
+
+		LOGGER.info("Starting handle");
         URI uri = httpExchange.getRequestURI();
- 	        OutputStream os = httpExchange.getResponseBody();
+		LOGGER.info("Uri request {}, Method {}, User {} ", uri.toString(),httpExchange.getRequestMethod() , httpExchange.getPrincipal());
+ 	    OutputStream os = httpExchange.getResponseBody();
         UsersDao users= UsersMemoryImpl.getInstance();
         //TODO Refactor isAdmin should return from Model?? and switch method
-        boolean isAdmin= users.hasRights(httpExchange.getPrincipal().getUsername(), "admin");
+        boolean isAdmin= users.hasRights(httpExchange.getPrincipal().getUsername(), ConstantsCommon.ROLE_ADMIN);
         if (httpExchange.getRequestMethod().equals(ConstantsCommon.GET)){
             doGet(httpExchange, uri, os, users);
         } else if (httpExchange.getRequestMethod().equals(ConstantsCommon.POST) && isAdmin){
@@ -48,10 +57,11 @@ public class ApiHandler implements HttpHandler {
         } else if (httpExchange.getRequestMethod().equals(ConstantsCommon.OPTIONS)){
             doOptions(httpExchange, isAdmin);
         } else{
+			LOGGER.info("{} method not allowed", httpExchange.getRequestMethod());
             httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_METHOD_NOT_ALLOWED, 0);
         }
-
-        os.close();
+ 	    os.close();
+		LOGGER.info("End handle");
     }
     /**
 	 * @param httpExchange
@@ -66,6 +76,7 @@ public class ApiHandler implements HttpHandler {
 		if (depth.length == 1 && depth[0].equals(ConstantsCommon.RESOURCES_ROOT)){
 			//getAllUsers
 			if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
+				LOGGER.info("Handle as Json request");
 				List<User> usersList = users.getAllUsers();
 				byte[] bytes = ConversionUtils.beanJsonToBytes(usersList);
 				httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_JSON);
@@ -74,6 +85,7 @@ public class ApiHandler implements HttpHandler {
 			}
 			else if (isaHeaderRequestingXML(httpExchange.getRequestHeaders())){
 			List<User> usersList = users.getAllUsers();
+				LOGGER.info("Handle as XML request");
 				byte[] bytes = ConversionUtils.beanXMLToBytes(usersList);
 				httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_XML);
 				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, bytes.length);
@@ -81,24 +93,27 @@ public class ApiHandler implements HttpHandler {
 
 			}
 			else{
+				LOGGER.info("There is more than one content type");
 				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, 0);
 			}
 		} else if(depth.length == 2 && depth[0].equals(ConstantsCommon.RESOURCES_ROOT)){
 		    //GetByUser
 			if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
-
+				LOGGER.info("Handle as Json request");
 				User user = users.getUser(depth[1]);
 				byte[] bytes = ConversionUtils.beanJsonToBytes(user);
 				httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_JSON);
 				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, bytes.length);
 				os.write(bytes);
 			}else if (isaHeaderRequestingXML(httpExchange.getRequestHeaders())){
+				LOGGER.info("Handle as XML request");
 				User user = users.getUser(depth[1]);
 				byte[] bytes = ConversionUtils.beanXMLToBytes(user);
 				httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_XML);
 				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, bytes.length);
 				os.write(bytes);
 			}else{
+				LOGGER.info("There is more than one content type");
 				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, 0);
 			}
 		}
@@ -126,12 +141,14 @@ public class ApiHandler implements HttpHandler {
 
 		if(depth.length == 2 && depth[0].equals(ConstantsCommon.RESOURCES_ROOT)) {
 			if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
+				LOGGER.info("Handle as Json request");
 				String body = ConversionUtils.inputStreamToString(httpExchange.getRequestBody());
 				byte[] bytes = ConversionUtils.stringJsonBeanToBytes(body, User.class);
 				httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_JSON);
 				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, bytes.length);
 				os.write(bytes);
 			}else  if (isaHeaderRequestingXML(httpExchange.getRequestHeaders())){
+				LOGGER.info("Handle as XML request");
 				String body = ConversionUtils.inputStreamToString(httpExchange.getRequestBody());
 				byte[] bytes = ConversionUtils.stringXMLBeanToBytes(body, User.class);
 				httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_JSON);
@@ -162,6 +179,8 @@ public class ApiHandler implements HttpHandler {
 		    httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_CREATED, 0);
 		}
 		else{
+			//TODO review if is right not to add in a put method if exist, must replace it?
+			LOGGER.info("There was impossible to add the user {}", user);
 		    httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNPROCESSABLE_ENTITY, 0);
 		}
 	}
@@ -175,14 +194,17 @@ public class ApiHandler implements HttpHandler {
 	private void doDelete(HttpExchange httpExchange, URI uri, UsersDao users) throws IOException {
 		String[] depth = getDepth(uri);
 		if (depth.length == 1){
+			LOGGER.info("Theres is not allowed to delete the resources");
 		    httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_FORBIDDEN, 0);
 		}
 		else if(depth.length == 2 && depth[0].equals(ConstantsCommon.RESOURCES_ROOT)){
 		    if (users.deleteUser(depth[1])){
+				LOGGER.info("The user {} was deleted ",depth[1]);
 		        httpExchange.getResponseHeaders().add(ConstantsCommon.LOCATION,uri.toString());
 		        httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, 0);
 		    }
 		    else {
+		    	LOGGER.info("The user does not exists");
 		        httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNPROCESSABLE_ENTITY, 0);
 		    }
 

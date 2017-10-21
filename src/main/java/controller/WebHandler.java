@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -9,9 +10,14 @@ import model.session.SessionDao;
 import model.session.SessionMemoryImpl;
 import model.user.UsersDao;
 import model.user.UsersMemoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("restriction")
+
 public class WebHandler implements HttpHandler {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 
 	public static final String PATHNAME_TEMPLATE = "src/main/view/pages/pageTemplate.html";
@@ -26,32 +32,43 @@ public class WebHandler implements HttpHandler {
 
 	@SuppressWarnings("restriction")
 	public void handle(HttpExchange httpExchange) throws IOException {
+
+		LOGGER.info("Starting handle");
 		OutputStream os = httpExchange.getResponseBody();
 		httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_HTML);
+		LOGGER.info("Uri request {}, Method {}", httpExchange.getRequestURI().toString(),httpExchange.getRequestMethod());
 		URI uri = httpExchange.getRequestURI();
 		UsersDao users= UsersMemoryImpl.getInstance();
 		SessionDao sessions  = SessionMemoryImpl.getInstance();
 		if (httpExchange.getRequestMethod().equals(ConstantsCommon.GET) ){
 			if (uri.toString().startsWith(LOGIN)){
+				LOGGER.info("Starting login");
 				doPageLogin(httpExchange, os, uri);
 			} else if(uri.toString().startsWith(PAGE)){
+				LOGGER.info("redirecting to page allowed just for logged users");
 				os = doPageLogged(httpExchange, os, uri);
 			} else if (uri.toString().startsWith(PATH_CLOSESSION)){
+				LOGGER.info("Requested close session of a user");
 				doCloseSessionAndRedirect(httpExchange, uri, users, sessions);
 			} else {
+				LOGGER.info(ConstantsCommon.MESSAGE_RESOURCE_NOT_FOUND);
 				sendHeaderAndWrite(httpExchange, os, ConstantsCommon.HTTP_STATUS_RESOURCE_NOT_FOUND, ConstantsCommon.MESSAGE_RESOURCE_NOT_FOUND);
 			}
 		} else if(httpExchange.getRequestMethod().equals(ConstantsCommon.POST)){
 			if (uri.toString().startsWith(DO_LOGIN)){
+				LOGGER.info("Requested login from form");
 				doSessionAfterLogin(httpExchange, os, uri, users, sessions);
 			} else{
+				LOGGER.info(ConstantsCommon.MESSAGE_RESOURCE_NOT_FOUND);
 				sendHeaderAndWrite(httpExchange, os, ConstantsCommon.HTTP_STATUS_RESOURCE_NOT_FOUND, ConstantsCommon.MESSAGE_RESOURCE_NOT_FOUND);
 			}
 
 		} else{
+			LOGGER.info("Method not allowed");
 			httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_METHOD_NOT_ALLOWED, 0);
 		}
 		os.close();
+		LOGGER.info("End of handle");
 	}
 
 	private void doSessionAfterLogin(HttpExchange httpExchange, OutputStream os, URI uri, UsersDao users, SessionDao sessions) throws IOException {
@@ -60,19 +77,23 @@ public class WebHandler implements HttpHandler {
             String user = params[0].split("=")[1];
             String pwd = params[1].split("=")[1];
             if (users.exists(user, pwd)) {
+
                 sessions.createSession(user);
+				LOGGER.info("Session created in memory for the user {}", user);
                 try {
+                	LOGGER.info("Requested to create a cookie session for user {}",user);
                     httpExchange.getResponseHeaders().set(ConstantsCommon.SET_COOKIE,SESSION_USER_ROLES+"=" + CryptoSessionUtils.encrypt(SEED,user) + "; path=/");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                httpExchange.setAttribute(SESSION_USER_ROLES, user);
                 if (uri.getRawQuery()!=null){
+                	LOGGER.info("Requested a redirect from get param after log in user");
                     doRedirect(httpExchange, uri.getRawQuery());
                 }else{
                     httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, 0);
                 }
             } else {
+            	LOGGER.info("The user {}, doesn't exist in the Model", user);
                 sendHeaderAndWrite(httpExchange, os, ConstantsCommon.HTTP_STATUS_UNAUTHORIZED, ConstantsCommon.MESSAGE_LOGIN_WAS_NOT_SUCCESSFUL);
             }
         }
@@ -85,6 +106,7 @@ public class WebHandler implements HttpHandler {
 		String user= uri.getQuery();
 		if (users.exists(user)){
             sessions.deleteSession(user);//si session existe cerrarla
+			LOGGER.info("Session deleted for the user {}", user);
             //httpExchange.getResponseHeaders().set(ConstantsCommon.COOKIE, "");
 
         }
@@ -105,11 +127,13 @@ public class WebHandler implements HttpHandler {
 	}
 
 	private void sendHeaderAndWrite(HttpExchange httpExchange, OutputStream os, int httpStatus, String message) throws IOException {
+		LOGGER.info("Response status {}",httpStatus);
 		httpExchange.sendResponseHeaders(httpStatus, message.getBytes().length);
 		os.write(message.getBytes());
 	}
 
 	private void doRedirect(HttpExchange httpExchange, String target) throws IOException {
+		LOGGER.info("Requested redirection to {}", target);
 		httpExchange.getResponseHeaders().set(ConstantsCommon.LOCATION, target);
 		httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_REDIRECT, 0);
 	}
@@ -124,6 +148,7 @@ public class WebHandler implements HttpHandler {
 				String userTryingAccess = CryptoSessionUtils.decrypt(SEED, usersession.split(SESSION_USER_ROLES + "=")[1]);
 
 				if (users.exists(userTryingAccess) && users.hasRights(userTryingAccess,uriWithoutSlash) && sessions.hasSession(userTryingAccess)){
+					LOGGER.error("Refreshing session for user {}", userTryingAccess);
 					sessions.refreshSession(userTryingAccess);
 					os = getOutputStreamPageLogged(httpExchange, userTryingAccess, uriWithoutSlash, PATH_CLOSESSION+"?"+userTryingAccess);
 				}
@@ -132,6 +157,7 @@ public class WebHandler implements HttpHandler {
 				}
 			}
 			catch(Exception e){
+				LOGGER.error("There was an error trying to decrypt session");
 				e.printStackTrace();
 			}
         }

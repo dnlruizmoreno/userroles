@@ -1,5 +1,10 @@
 package model.user;
 
+import controller.ConstantsCommon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -8,27 +13,40 @@ import java.util.ListIterator;
 //TODO Streams!!
 public class UsersMemoryImpl implements UsersDao{
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+
+	public static final String ROLE_PAGE_3 = "PAGE_3";
 	private static UsersMemoryImpl instance;
 
 	private List<User> users;
 
 	private UsersMemoryImpl(){
 		ArrayList<String> listRolesUno = new ArrayList<String>();
-		listRolesUno.add("admin");
-		listRolesUno.add("PAGE_1");
+		listRolesUno.add(ConstantsCommon.ROLE_ADMIN);
+		listRolesUno.add(ConstantsCommon.ROLE_PAGE_1);
 		User uno = new User("admin","password",listRolesUno);
 		ArrayList<String> listRolesDos = new ArrayList<String>();
-		listRolesDos.add("PAGE_1");
-		listRolesDos.add("PAGE_2");
-		listRolesDos.add("PAGE_3");
+		listRolesDos.add(ConstantsCommon.ROLE_PAGE_1);
+		listRolesDos.add(ConstantsCommon.ROLE_PAGE_2);
+		listRolesDos.add(ROLE_PAGE_3);
 		User dos = new User("dos","password",listRolesDos);
 		ArrayList<String> listRolesTres = new ArrayList<String>();
-		listRolesTres.add("PAGE_2");
+		listRolesTres.add(ConstantsCommon.ROLE_PAGE_2);
 		User tres = new User("tres","password",listRolesTres);
 		users = new ArrayList();
 		users.add(uno);
 		users.add(dos);
 		users.add(tres);
+
+		LOGGER.debug("There are {} users", users.size() );
+		for (User user:users) {
+			LOGGER.debug("user {}, pwd {}", user.getName(), user.getPassword());
+			for(String role:user.getRoles()){
+				LOGGER.debug("has roles {}", role);
+			}
+		}
+
 	}
 
 	public List<User> getAllUsers() {
