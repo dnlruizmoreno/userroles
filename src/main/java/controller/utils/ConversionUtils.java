@@ -1,4 +1,4 @@
-package controller;
+package controller.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +18,7 @@ public class ConversionUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    static String inputStreamToString(InputStream inputStream) throws IOException {
+    public static String inputStreamToString(InputStream inputStream) throws IOException {
         // TODO Auto-generated method stub
 
         BufferedReader bufferedReader = null;
@@ -31,7 +31,7 @@ public class ConversionUtils {
         return stringBuilder.toString();
     }
 
-    static byte[] beanJsonToBytes(Object object) throws JsonProcessingException {
+    public  static byte[] beanJsonToBytes(Object object) throws JsonProcessingException {
         ObjectMapper mapperObj = new ObjectMapper();
         byte[] bytes;
         if (object != null) {
@@ -42,7 +42,7 @@ public class ConversionUtils {
         return bytes;
     }
 
-    static byte[] beanXMLToBytes(Object object) throws JsonProcessingException {
+    public static byte[] beanXMLToBytes(Object object) throws JsonProcessingException {
         XmlMapper xmlMapper = new XmlMapper();
         byte[] bytes;
         if (object != null) {
@@ -54,12 +54,12 @@ public class ConversionUtils {
     }
 
 
-    static <T>  byte[] stringJsonBeanToBytes(String body, Class <T> classname ) throws IOException {
+    public static <T>  byte[] stringJsonBeanToBytes(String body, Class <T> classname ) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return   mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mapper.readValue(body, classname)).getBytes();
     }
 
-    static <T>  byte[] stringXMLBeanToBytes(String body, Class <T> classname ) throws IOException {
+    public static <T>  byte[] stringXMLBeanToBytes(String body, Class <T> classname ) throws IOException {
         XmlMapper xmlMapper = new XmlMapper();
         return   xmlMapper.writerWithDefaultPrettyPrinter().writeValueAsString(xmlMapper.readValue(body, classname)).getBytes();
     }

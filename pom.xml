@@ -11,7 +11,7 @@
     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>3.8.1</version>
+        <version>4.12</version>
         <scope>test</scope>
     </dependency>
     <dependency>
@@ -44,13 +44,6 @@
           <artifactId>slf4j-log4j12</artifactId>
           <version>1.7.5</version>
       </dependency>
-      <dependency>
-          <groupId>org.junit.jupiter</groupId>
-          <artifactId>junit-jupiter-api</artifactId>
-          <version>RELEASE</version>
-      </dependency>
-
-
   </dependencies>
   <build>
     <finalName>user</finalName>
@@ -71,7 +64,7 @@
                       <manifest>
                           <addClasspath>true</addClasspath>
                           <classpathPrefix>lib/</classpathPrefix>
-                          <mainClass>Application</mainClass>
+                          <mainClass>application.Application</mainClass>
                       </manifest>
                   </archive>
 

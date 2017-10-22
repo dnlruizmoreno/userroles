@@ -1,6 +1,7 @@
-package controller;
+package controller.utils;
 
 public class ConstantsCommon {
+
     private ConstantsCommon() {
         throw new IllegalStateException("Constant class");
     }
@@ -51,4 +52,6 @@ public class ConstantsCommon {
     public static final String ROLE_ADMIN = "admin";
     public static final String ROLE_PAGE_1 = "PAGE_1";
     public static final String ROLE_PAGE_2 = "PAGE_2";
+    public static final String ROLE_PAGE_3 = "PAGE_3";
+
 }

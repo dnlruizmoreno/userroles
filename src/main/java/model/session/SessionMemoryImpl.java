@@ -10,6 +10,15 @@ public class SessionMemoryImpl implements SessionDao{
 
     private HashMap<String,Session> sessionHashMap;
 
+
+    public HashMap<String, Session> getSessionHashMap() {
+        return sessionHashMap;
+    }
+
+    public void setSessionHashMap(HashMap<String, Session> sessionHashMap) {
+        this.sessionHashMap = sessionHashMap;
+    }
+
     private SessionMemoryImpl(){
         sessionHashMap = new HashMap<>();
     }

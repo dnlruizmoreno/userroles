@@ -1,6 +1,6 @@
 package model.user;
 
-import controller.ConstantsCommon;
+import controller.utils.ConstantsCommon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +16,13 @@ public class UsersMemoryImpl implements UsersDao{
 	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 
-	public static final String ROLE_PAGE_3 = "PAGE_3";
 	private static UsersMemoryImpl instance;
 
 	private List<User> users;
+
+	public List<User> getUsers() {
+		return users;
+	}
 
 	private UsersMemoryImpl(){
 		ArrayList<String> listRolesUno = new ArrayList<String>();
@@ -29,7 +32,7 @@ public class UsersMemoryImpl implements UsersDao{
 		ArrayList<String> listRolesDos = new ArrayList<String>();
 		listRolesDos.add(ConstantsCommon.ROLE_PAGE_1);
 		listRolesDos.add(ConstantsCommon.ROLE_PAGE_2);
-		listRolesDos.add(ROLE_PAGE_3);
+		listRolesDos.add(ConstantsCommon.ROLE_PAGE_3);
 		User dos = new User("dos","password",listRolesDos);
 		ArrayList<String> listRolesTres = new ArrayList<String>();
 		listRolesTres.add(ConstantsCommon.ROLE_PAGE_2);

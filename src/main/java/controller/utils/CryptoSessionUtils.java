@@ -1,4 +1,4 @@
-package controller;
+package controller.utils;
 
 import java.security.SecureRandom;
 
@@ -8,8 +8,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoSessionUtils {
-
-    private final static String HEX = "0123456789ABCDEF";
 
     public static String encrypt(String seed, String cleartext) throws Exception {
         byte[] rawKey = getRawKey(seed.getBytes());
@@ -28,24 +26,27 @@ public class CryptoSessionUtils {
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
         sr.setSeed(seed);
-        kgen.init(128, sr);
+        kgen.init(128, sr); // 192 and 256 bits may not be available
         SecretKey skey = kgen.generateKey();
-        return skey.getEncoded();
-
+        byte[] raw = skey.getEncoded();
+        return raw;
     }
+
+
     private static byte[] encrypt(byte[] raw, byte[] clear) throws Exception {
         SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-        return cipher.doFinal(clear);
-
+        byte[] encrypted = cipher.doFinal(clear);
+        return encrypted;
     }
+
     private static byte[] decrypt(byte[] raw, byte[] encrypted) throws Exception {
         SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-        return cipher.doFinal(encrypted);
-
+        byte[] decrypted = cipher.doFinal(encrypted);
+        return decrypted;
     }
 
     public static String toHex(String txt) {
@@ -66,16 +67,16 @@ public class CryptoSessionUtils {
     public static String toHex(byte[] buf) {
         if (buf == null)
             return "";
-        StringBuilder result = new StringBuilder(2*buf.length);
+        StringBuffer result = new StringBuffer(2*buf.length);
         for (int i = 0; i < buf.length; i++) {
             appendHex(result, buf[i]);
         }
         return result.toString();
     }
-
-    private static void appendHex(StringBuilder sb, byte b) {
+    private final static String HEX = "0123456789ABCDEF";
+    private static void appendHex(StringBuffer sb, byte b) {
         sb.append(HEX.charAt((b>>4)&0x0f)).append(HEX.charAt(b&0x0f));
     }
 
-    }
+}
 
