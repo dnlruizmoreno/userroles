@@ -1,7 +1,5 @@
 package model.session;
 
-import model.user.User;
-
 import java.util.HashMap;
 
 public class SessionMemoryImpl implements SessionDao{

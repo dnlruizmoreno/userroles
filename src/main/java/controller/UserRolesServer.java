@@ -1,14 +1,13 @@
 package controller;
 
+import com.sun.net.httpserver.BasicAuthenticator;
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+import model.user.UsersDao;
+import model.user.UsersMemoryImpl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
-import com.sun.net.httpserver.BasicAuthenticator;
-import com.sun.net.httpserver.HttpContext;
-import model.user.UsersMemoryImpl;
-import model.user.UsersDao;
 
 @SuppressWarnings("restriction")
 public class UserRolesServer {

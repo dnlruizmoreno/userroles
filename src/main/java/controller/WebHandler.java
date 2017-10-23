@@ -1,9 +1,5 @@
 package controller;
 
-import java.io.*;
-import java.lang.invoke.MethodHandles;
-import java.net.URI;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import controller.utils.ConstantsCommon;
@@ -15,6 +11,13 @@ import model.user.UsersDao;
 import model.user.UsersMemoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
+import java.net.URI;
 
 @SuppressWarnings("restriction")
 
