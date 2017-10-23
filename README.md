@@ -11,5 +11,11 @@ endpoint by default for the api:
 localhost:8030/api/users
 
 endpoint by default for the web
-
 localhost:8030/
+
+for login
+localhost:8030/login
+
+for login with redirect:
+localhost:8030/PAGE_1
+
