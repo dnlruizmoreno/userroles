@@ -189,8 +189,8 @@ public class ApiHandler implements HttpHandler {
 			if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
 				ObjectMapper mapper = new ObjectMapper();
 				user = mapper.readValue(body, User.class);
-			} else if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
-				ObjectMapper mapper = new ObjectMapper();
+			} else if (isaHeaderRequestingXML(httpExchange.getRequestHeaders())) {
+				XmlMapper mapper = new XmlMapper();
 				user = mapper.readValue(body, User.class);
 			}
 			if (body != null && users.addUser(user)) {
