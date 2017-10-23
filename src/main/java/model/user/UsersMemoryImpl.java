@@ -97,17 +97,19 @@ public class UsersMemoryImpl implements UsersDao{
 	}
 
 	public boolean updateUser(User user) {
-		ListIterator<User> iterator = getAllUsers().listIterator();
-		while (iterator.hasNext()) {
-			User next = iterator.next();
-			if (next.equals(user)) {
-				//Replace element
-				iterator.set(user);
-				return true;
+		if (exists(user.getName())) {
+			ListIterator<User> iterator = getAllUsers().listIterator();
+			while (iterator.hasNext()) {
+				User next = iterator.next();
+				if (next.equals(user)) {
+					//Replace element
+					iterator.set(user);
+					return true;
+				}
 			}
 		}
+		getAllUsers().add(user);
 		return false;
-
 	}
 
 	public boolean deleteUser(String name) {

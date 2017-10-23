@@ -2,6 +2,7 @@ package controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -50,7 +51,7 @@ public class ApiHandler implements HttpHandler {
         if (httpExchange.getRequestMethod().equals(ConstantsCommon.GET)){
             doGet(httpExchange, uri, os, users);
         } else if (httpExchange.getRequestMethod().equals(ConstantsCommon.POST) && isAdmin){
-            doPost(httpExchange, uri, os);
+            doPost(httpExchange, uri, os, users);
         } else if (httpExchange.getRequestMethod().equals(ConstantsCommon.PUT) && isAdmin) {
             doPut(httpExchange, uri, users);
         } else if (httpExchange.getRequestMethod().equals(ConstantsCommon.DELETE) && isAdmin){
@@ -137,29 +138,38 @@ public class ApiHandler implements HttpHandler {
 	 * @param os
 	 * @throws IOException
 	 */
-	private void doPost(HttpExchange httpExchange, URI uri, OutputStream os) throws IOException {
+	private void doPost(HttpExchange httpExchange, URI uri, OutputStream os,  UsersDao users) throws IOException {
 		String[] depth = getDepth(uri);
-
 		if(depth.length == 2 && depth[0].equals(ConstantsCommon.RESOURCES_ROOT)) {
+			String body = ConversionUtils.inputStreamToString(httpExchange.getRequestBody());
+			User user = new User();
 			if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
-				LOGGER.info("Handle as Json request");
-				String body = ConversionUtils.inputStreamToString(httpExchange.getRequestBody());
-				byte[] bytes = ConversionUtils.stringJsonBeanToBytes(body, User.class);
-				httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_JSON);
-				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, bytes.length);
-				os.write(bytes);
-			}else  if (isaHeaderRequestingXML(httpExchange.getRequestHeaders())){
-				LOGGER.info("Handle as XML request");
-				String body = ConversionUtils.inputStreamToString(httpExchange.getRequestBody());
-				byte[] bytes = ConversionUtils.stringXMLBeanToBytes(body, User.class);
-				httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_JSON);
-				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, bytes.length);
-				os.write(bytes);
-			}else{
-				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, 0);
+				ObjectMapper mapper = new ObjectMapper();
+				user = mapper.readValue(body, User.class);
+			} else if (isaHeaderRequestingXML(httpExchange.getRequestHeaders())) {
+				XmlMapper mapper = new XmlMapper();
+				user = mapper.readValue(body, User.class);
 			}
-
-
+			if (body!=null){
+					users.updateUser(user);
+					byte[] bytes ;
+					if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
+						bytes = ConversionUtils.stringJsonBeanToBytes(body, User.class);
+						httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_JSON);
+						httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, bytes.length);
+						os.write(bytes);
+					} else if (isaHeaderRequestingXML(httpExchange.getRequestHeaders())) {
+						httpExchange.getResponseHeaders().add(ConstantsCommon.CONTENT_TYPE, ConstantsCommon.APPLICATION_JSON);
+						bytes = ConversionUtils.stringXMLBeanToBytes(body, User.class);
+						httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK, bytes.length);
+						os.write(bytes);
+					} else {
+						httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNPROCESSABLE_ENTITY, 0);
+					}
+			} else {
+				LOGGER.info("There was impossible to add the user {}", user);
+				httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNPROCESSABLE_ENTITY, 0);
+			}
 		}else{
 		    httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_RESOURCE_NOT_FOUND, 0);
 		}
@@ -172,17 +182,27 @@ public class ApiHandler implements HttpHandler {
 	 * @throws IOException
 	 */
 	private void doPut(HttpExchange httpExchange, URI uri, UsersDao users) throws IOException {
-		String body = ConversionUtils.inputStreamToString(httpExchange.getRequestBody());
-		ObjectMapper mapper = new ObjectMapper();
-		User user = mapper.readValue(body, User.class);
-		if (users.addUser(user)){
-		    httpExchange.getResponseHeaders().add(ConstantsCommon.LOCATION,uri.toString());
-		    httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_CREATED, 0);
-		}
-		else{
-			//TODO review if is right not to add in a put method if exist, must replace it?
-			LOGGER.info("There was impossible to add the user {}", user);
-		    httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNPROCESSABLE_ENTITY, 0);
+		String[] depth = getDepth(uri);
+		if(depth.length == 2 && depth[0].equals(ConstantsCommon.RESOURCES_ROOT)) {
+			String body = ConversionUtils.inputStreamToString(httpExchange.getRequestBody());
+			User user = new User();
+			if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
+				ObjectMapper mapper = new ObjectMapper();
+				user = mapper.readValue(body, User.class);
+			} else if (isAHeaderRequestingJson(httpExchange.getRequestHeaders())) {
+				ObjectMapper mapper = new ObjectMapper();
+				user = mapper.readValue(body, User.class);
+			}
+			if (body != null && users.addUser(user)) {
+					httpExchange.getResponseHeaders().add(ConstantsCommon.LOCATION, uri.toString());
+					httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_CREATED, 0);
+				} else {
+					LOGGER.info("There was impossible to add the user {}", user);
+					httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_UNPROCESSABLE_ENTITY, 0);
+				}
+
+		}else{
+			httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_RESOURCE_NOT_FOUND, 0);
 		}
 	}
 
