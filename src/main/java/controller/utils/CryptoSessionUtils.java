@@ -6,6 +6,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 
+/**
+ * Utility that crypt and encrypt using AES and SHA1PRNG
+ */
 public class CryptoSessionUtils {
 
     public static String encrypt(String seed, String cleartext) throws Exception {

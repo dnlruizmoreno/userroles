@@ -1,12 +1,25 @@
 package controller.utils;
 
+/**
+ * Class used to center common constants in the project
+ */
 public class ConstantsCommon {
 
     private ConstantsCommon() {
         throw new IllegalStateException("Constant class");
     }
 
-    //Realted to project
+
+    public static final String PATHNAME_TEMPLATE = "src/main/view/pages/pageTemplate.html";
+    public static final String FILEPATH_PAGE_LOGIN = "src/main/view/pages/login.html";
+    public static final String SESSION_USER_ROLES = "sessionUserRoles";
+    public static final String PATH_CLOSESSION = "/closession";
+    public static final String LOGIN_WITH_PARAMS = "/login?";
+    public static final String LOGIN = "/login";
+    public static final String PAGE = "/PAGE";
+    public static final String DO_LOGIN = "/doLogin";
+
+    //Related to project
     public static final String RESOURCES_ROOT = "users";
     public static final String API_CONTEXT = "/api/";
 

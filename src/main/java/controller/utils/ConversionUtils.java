@@ -18,9 +18,13 @@ public class ConversionUtils {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Convert to String from inputStream
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
     public static String inputStreamToString(InputStream inputStream) throws IOException {
-        // TODO Auto-generated method stub
-
         BufferedReader bufferedReader = null;
         StringBuilder stringBuilder = new StringBuilder();
         String line;
@@ -31,6 +35,13 @@ public class ConversionUtils {
         return stringBuilder.toString();
     }
 
+    /**
+     * Convert to array bytes from an Object Json pojo given
+     *
+     * @param object
+     * @return
+     * @throws JsonProcessingException
+     */
     public  static byte[] beanJsonToBytes(Object object) throws JsonProcessingException {
         ObjectMapper mapperObj = new ObjectMapper();
         byte[] bytes;
@@ -42,6 +53,13 @@ public class ConversionUtils {
         return bytes;
     }
 
+    /**
+     * Convert to array bytes from an Object Xml pojo given
+     *
+     * @param object
+     * @return
+     * @throws JsonProcessingException
+     */
     public static byte[] beanXMLToBytes(Object object) throws JsonProcessingException {
         XmlMapper xmlMapper = new XmlMapper();
         byte[] bytes;
@@ -54,11 +72,29 @@ public class ConversionUtils {
     }
 
 
+    /**
+     * Convert to array bytes from an String json and the class that represent it in Json <T>
+     *
+     * @param body
+     * @param classname
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public static <T>  byte[] stringJsonBeanToBytes(String body, Class <T> classname ) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return   mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mapper.readValue(body, classname)).getBytes();
     }
 
+    /**
+     * Convert to array bytes from an String xml and the class that represent it in Json
+     *
+     * @param body
+     * @param classname
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public static <T>  byte[] stringXMLBeanToBytes(String body, Class <T> classname ) throws IOException {
         XmlMapper xmlMapper = new XmlMapper();
         return   xmlMapper.writerWithDefaultPrettyPrinter().writeValueAsString(xmlMapper.readValue(body, classname)).getBytes();

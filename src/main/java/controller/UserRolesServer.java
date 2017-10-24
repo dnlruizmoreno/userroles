@@ -3,11 +3,17 @@ package controller;
 import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+import controller.utils.ConstantsCommon;
+import model.user.User;
 import model.user.UsersDao;
 import model.user.UsersMemoryImpl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+
+import static controller.utils.ConstantsCommon.ROLE_PAGE_3;
 
 @SuppressWarnings("restriction")
 public class UserRolesServer {
@@ -16,14 +22,15 @@ public class UserRolesServer {
 	public static final String CONTEXT_API_SLASH = CONTEXT_API+"/";
 	private HttpServer httpServer;
 
+
 	/**
-	 * Instantiates a new simple http server.
+	 * Instantiates a new http server.
 	 *
 	 * @param port the port
 	 */
 	public UserRolesServer(int port) {
 		try {
-			//Create HttpServer which is listening on the given port 
+			//Create HttpServer which is listening on the given port
 			httpServer = HttpServer.create(new InetSocketAddress(port), 0);
 			//Create a new context for the given context and handler
 			HttpContext httpContext = httpServer.createContext(CONTEXT_API, new ApiHandler());
@@ -45,12 +52,15 @@ public class UserRolesServer {
 		}
 
 	}
+
+
 	/**
 	 * Start.
 	 */
 	public void start() {
 		this.httpServer.start();
 	}
+
 
 
 }

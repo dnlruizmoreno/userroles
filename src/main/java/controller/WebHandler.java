@@ -11,6 +11,7 @@ import model.user.UsersDao;
 import model.user.UsersMemoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import view.Pages;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,17 +26,15 @@ public class WebHandler implements HttpHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-
-	public static final String PATHNAME_TEMPLATE = "src/main/view/pages/pageTemplate.html";
-	public static final String FILEPATH_PAGE_LOGIN = "src/main/view/pages/login.html";
-	public static final String SESSION_USER_ROLES = "sessionUserRoles";
-	public static final String PATH_CLOSESSION = "/closession";
+	//Seed for encrypt/decrypt
 	public static final String SEED="SEMILLAUSERSESSION";
-	public static final String LOGIN_WITH_PARAMS = "/login?";
-	public static final String LOGIN = "/login";
-	public static final String PAGE = "/PAGE";
-	public static final String DO_LOGIN = "/doLogin";
 
+	/**
+	 * handle the request given in httpexchange
+	 *
+	 * @param httpExchange
+	 * @throws IOException
+	 */
 	@SuppressWarnings("restriction")
 	public void handle(HttpExchange httpExchange) throws IOException {
 
@@ -47,13 +46,13 @@ public class WebHandler implements HttpHandler {
 		UsersDao users= UsersMemoryImpl.getInstance();
 		SessionDao sessions  = SessionMemoryImpl.getInstance();
 		if (httpExchange.getRequestMethod().equals(ConstantsCommon.GET) ){
-			if (uri.toString().startsWith(LOGIN)){
+			if (uri.toString().startsWith(ConstantsCommon.LOGIN)){
 				LOGGER.info("Starting login");
 				doPageLogin(httpExchange, os, uri);
-			} else if(uri.toString().startsWith(PAGE)){
+			} else if(uri.toString().startsWith(ConstantsCommon.PAGE)){
 				LOGGER.info("redirecting to page allowed just for logged users");
 				os = doPageLogged(httpExchange, os, uri);
-			} else if (uri.toString().startsWith(PATH_CLOSESSION)){
+			} else if (uri.toString().startsWith(ConstantsCommon.PATH_CLOSESSION)){
 				LOGGER.info("Requested close session of a user");
 				doCloseSessionAndRedirect(httpExchange, uri, users, sessions);
 			} else {
@@ -61,7 +60,7 @@ public class WebHandler implements HttpHandler {
 				sendHeaderAndWrite(httpExchange, os, ConstantsCommon.HTTP_STATUS_RESOURCE_NOT_FOUND, ConstantsCommon.MESSAGE_RESOURCE_NOT_FOUND);
 			}
 		} else if(httpExchange.getRequestMethod().equals(ConstantsCommon.POST)){
-			if (uri.toString().startsWith(DO_LOGIN)){
+			if (uri.toString().startsWith(ConstantsCommon.DO_LOGIN)){
 				LOGGER.info("Requested login from form");
 				doSessionAfterLogin(httpExchange, os, uri, users, sessions);
 			} else{
@@ -77,6 +76,16 @@ public class WebHandler implements HttpHandler {
 		LOGGER.info("End of handle");
 	}
 
+	/**
+	 * In charge of create session and redirect if applys
+	 *
+	 * @param httpExchange
+	 * @param os
+	 * @param uri
+	 * @param users
+	 * @param sessions
+	 * @throws IOException
+	 */
 	private void doSessionAfterLogin(HttpExchange httpExchange, OutputStream os, URI uri, UsersDao users, SessionDao sessions) throws IOException {
 		String [] params = (ConversionUtils.inputStreamToString(httpExchange.getRequestBody())).split("&");
 		if (params.length == 2) {
@@ -88,7 +97,7 @@ public class WebHandler implements HttpHandler {
 				LOGGER.info("Session created in memory for the user {}", user);
                 try {
                 	LOGGER.info("Requested to create a cookie session for user {}",user);
-                    httpExchange.getResponseHeaders().set(ConstantsCommon.SET_COOKIE,SESSION_USER_ROLES+"=" + CryptoSessionUtils.encrypt(SEED,user) + "; path=/");
+                    httpExchange.getResponseHeaders().set(ConstantsCommon.SET_COOKIE, ConstantsCommon.SESSION_USER_ROLES+"=" + CryptoSessionUtils.encrypt(SEED,user) + "; path=/");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -108,6 +117,15 @@ public class WebHandler implements HttpHandler {
         }
 	}
 
+	/**
+	 * In charge of close session if exists and redirect to login
+	 *
+	 * @param httpExchange
+	 * @param uri
+	 * @param users
+	 * @param sessions
+	 * @throws IOException
+	 */
 	private void doCloseSessionAndRedirect(HttpExchange httpExchange, URI uri, UsersDao users, SessionDao sessions) throws IOException {
 		String user= uri.getQuery();
 		if (users.exists(user)){
@@ -116,49 +134,62 @@ public class WebHandler implements HttpHandler {
             //httpExchange.getResponseHeaders().set(ConstantsCommon.COOKIE, "");
 
         }
-		doRedirect(httpExchange, LOGIN);
+		doRedirect(httpExchange, ConstantsCommon.LOGIN);
 	}
 
-	private void doPageLogin(HttpExchange httpExchange, OutputStream os, URI uri) throws IOException {
-		File file = new File(FILEPATH_PAGE_LOGIN);
-		FileInputStream fis = new FileInputStream(file);
-		String html = ConversionUtils.inputStreamToString(fis);
-		String urirawquery=uri.getRawQuery();
-		if (urirawquery == null) urirawquery="";
-		html= String.format(html,urirawquery);
-		httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK,html.getBytes().length);
-		//Write the response string
-		os.write(html.getBytes());
-	}
 
+	/**
+	 * Method to write te the response and the status
+	 * @param httpExchange
+	 * @param os
+	 * @param httpStatus
+	 * @param message
+	 * @throws IOException
+	 */
 	private void sendHeaderAndWrite(HttpExchange httpExchange, OutputStream os, int httpStatus, String message) throws IOException {
 		LOGGER.info("Response status {}",httpStatus);
 		httpExchange.sendResponseHeaders(httpStatus, message.getBytes().length);
 		os.write(message.getBytes());
 	}
 
+	/**
+	 *
+	 * Mehtod to redirect to a target given
+	 * @param httpExchange
+	 * @param target
+	 * @throws IOException
+	 */
 	private void doRedirect(HttpExchange httpExchange, String target) throws IOException {
 		LOGGER.info("Requested redirection to {}", target);
 		httpExchange.getResponseHeaders().set(ConstantsCommon.LOCATION, target);
 		httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_REDIRECT, 0);
 	}
 
+	/**
+	 * Method in charge of log in the user given by param post
+	 *
+	 * @param httpExchange
+	 * @param os
+	 * @param uri
+	 * @return
+	 * @throws IOException
+	 */
 	private OutputStream doPageLogged(HttpExchange httpExchange, OutputStream os, URI uri) throws IOException {
 		UsersDao users= UsersMemoryImpl.getInstance();
 		SessionDao sessions  = SessionMemoryImpl.getInstance();
 		String usersession =httpExchange.getRequestHeaders().getFirst(ConstantsCommon.COOKIE);
 		String uriWithoutSlash= uri.toString().substring(1);
-		if (usersession!= null &&  usersession.split(SESSION_USER_ROLES+"=").length ==2){
+		if (usersession!= null &&  usersession.split(ConstantsCommon.SESSION_USER_ROLES+"=").length ==2){
 			try {
-				String userTryingAccess = CryptoSessionUtils.decrypt(SEED, usersession.split(SESSION_USER_ROLES + "=")[1]);
+				String userTryingAccess = CryptoSessionUtils.decrypt(SEED, usersession.split(ConstantsCommon.SESSION_USER_ROLES + "=")[1]);
 
 				if (users.exists(userTryingAccess) && users.hasRights(userTryingAccess,uriWithoutSlash) && sessions.hasSession(userTryingAccess)){
 					LOGGER.error("Refreshing session for user {}", userTryingAccess);
 					sessions.refreshSession(userTryingAccess);
-					os = getOutputStreamPageLogged(httpExchange, userTryingAccess, uriWithoutSlash, PATH_CLOSESSION+"?"+userTryingAccess);
+					os = getOutputStreamPageLogged(httpExchange, userTryingAccess, uriWithoutSlash, ConstantsCommon.PATH_CLOSESSION+"?"+userTryingAccess);
 				}
 				else{
-					doRedirect(httpExchange, LOGIN_WITH_PARAMS +uriWithoutSlash);
+					doRedirect(httpExchange, ConstantsCommon.LOGIN_WITH_PARAMS +uriWithoutSlash);
 				}
 			}
 			catch(Exception e){
@@ -167,24 +198,46 @@ public class WebHandler implements HttpHandler {
 			}
         }
         else{
-			doRedirect(httpExchange, LOGIN_WITH_PARAMS +uriWithoutSlash);
+			doRedirect(httpExchange, ConstantsCommon.LOGIN_WITH_PARAMS +uriWithoutSlash);
         }
 		return os;
 	}
 
-	private OutputStream getOutputStreamPageLogged(HttpExchange httpExchange, String username, String page, String url) throws IOException {
-		OutputStream os;
-		File file = new File(PATHNAME_TEMPLATE);
-		os = httpExchange.getResponseBody();
-		FileInputStream fis = new FileInputStream(file);
-		String html = ConversionUtils.inputStreamToString(fis);
-		html= String.format(html,page,username,url);
+
+	/**
+	 * Retrieve the login page
+	 *
+	 * @param httpExchange
+	 * @param os
+	 * @param uri
+	 * @throws IOException
+	 */
+	private void doPageLogin(HttpExchange httpExchange, OutputStream os, URI uri) throws IOException {
+		byte[] html = Pages.getOutputStreamPageLogin(uri.getRawQuery()) ;
+		httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK,html.length);
 		//Write the response string
-		byte[] bytearray =html.getBytes();
-		httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK,html.getBytes().length);
+		os.write(html);
+	}
+
+
+	/**
+	 *
+	 * Retrieve the OutpuStream of an HTML template of the page loggeds
+	 * @param httpExchange
+	 * @param username
+	 * @param page
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 */
+	private OutputStream getOutputStreamPageLogged(HttpExchange httpExchange, String username, String page, String url) throws IOException {
+		byte[] bytearray =Pages.getOutputStreamPageLogged(username, page, url);
+		httpExchange.sendResponseHeaders(ConstantsCommon.HTTP_STATUS_OK,bytearray.length);
+		OutputStream os = httpExchange.getResponseBody();
 		os.write(bytearray);
 		os.close();
 		return os;
 	}
+
 
 }

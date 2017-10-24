@@ -40,7 +40,13 @@ public class ApiHandler implements HttpHandler {
         methodAcceptedUser = new ArrayList<>();
         methodAcceptedUser.add(ConstantsCommon.GET);
     }
-    public void handle(HttpExchange httpExchange) throws IOException {
+
+	/**
+	 * handle the request given in httpexchange
+	 * @param httpExchange
+	 * @throws IOException
+	 */
+	public void handle(HttpExchange httpExchange) throws IOException {
 
 		LOGGER.info("Starting handle");
         URI uri = httpExchange.getRequestURI();
@@ -66,6 +72,8 @@ public class ApiHandler implements HttpHandler {
 		LOGGER.info("End handle");
     }
     /**
+	 * In charge of requests GET
+	 *
 	 * @param httpExchange
 	 * @param uri
 	 * @param os
@@ -124,15 +132,26 @@ public class ApiHandler implements HttpHandler {
 		}
 	}
 
+	/**
+	 * Check if is asking for Json handling or by default
+	 * @param headers
+	 * @return
+	 */
 	private boolean isaHeaderRequestingXML(Headers headers) {
 		return headers !=null && headers.get(ConstantsCommon.CONTENT_TYPE).size()==1 && headers.get(ConstantsCommon.CONTENT_TYPE).get(0).equals(ConstantsCommon.APPLICATION_XML);
 	}
 
+	/**
+	 * Check if is asking for Xml handling
+	 * @param headers
+	 * @return
+	 */
 	private static boolean isAHeaderRequestingJson(Headers headers) {
 		return headers == null || null == headers.get(ConstantsCommon.CONTENT_TYPE) ||(headers.get(ConstantsCommon.CONTENT_TYPE).size()==1 && headers.get(ConstantsCommon.CONTENT_TYPE).get(0).equals(ConstantsCommon.APPLICATION_JSON));
 	}
 
 	/**
+	 * In charge of requests POST
 	 * @param httpExchange
 	 * @param uri
 	 * @param os
@@ -176,6 +195,9 @@ public class ApiHandler implements HttpHandler {
 	}
 
 	/**
+	 *
+	 * In charge of requests PUT
+	 *
 	 * @param httpExchange
 	 * @param uri
 	 * @param users
@@ -207,6 +229,8 @@ public class ApiHandler implements HttpHandler {
 	}
 
 	/**
+	 *
+	 * In charge of requests DELETE
 	 * @param httpExchange
 	 * @param uri
 	 * @param users
@@ -232,11 +256,18 @@ public class ApiHandler implements HttpHandler {
 		}
 	}
 
+	/**
+	 * Retrives and String array tih the uri from the request splitted by depth -> /
+	 * @param uri
+	 * @return
+	 */
 	private static String[] getDepth(URI uri) {
 		return uri.toString().substring(ConstantsCommon.API_CONTEXT.length()).split("/");
 	}
 
 	/**
+	 * In charge of requests Options, retrive the info reviewing the roles of the user
+	 *
 	 * @param httpExchange
 	 * @param isAdmin
 	 * @throws IOException

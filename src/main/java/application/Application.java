@@ -12,9 +12,14 @@ import java.lang.invoke.MethodHandles;
  * Created by danielruizm on 10/20/17.
  */
 public class Application {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-
+    /**
+     *
+     * Main method
+     * @param args can receive a port as arg
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
 
         int port = 8030;
